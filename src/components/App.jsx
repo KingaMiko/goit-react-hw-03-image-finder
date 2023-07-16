@@ -18,11 +18,18 @@ class App extends Component {
   handleInputChange = e => {
     this.setState({ inputValue: e.target.value });
   };
-
   handleSubmit = e => {
     e.preventDefault();
-    this.setState({ images: [], currentPage: 1 }, () => this.fetchImages());
-    this.setState({ inputValue: '' });
+    this.setState(
+      {
+        images: [],
+        currentPage: 1,
+      },
+      () => {
+        this.fetchImages();
+        this.setState({ inputValue: '' });
+      }
+    );
   };
 
   handleImageClick = imageURL => {
@@ -30,7 +37,6 @@ class App extends Component {
   };
 
   fetchImages = async () => {
-    console.log('Fetching images...');
     this.setState({ loading: true });
     try {
       const response = await axios.get(
@@ -48,10 +54,21 @@ class App extends Component {
     }
   };
 
+  handleKeydown = e => {
+    if (e.code === 'Escape') {
+      this.setState({ selectedImage: null });
+    }
+  };
+
   componentDidMount() {
     if (this.state.inputValue !== '') {
       this.fetchImages();
     }
+    window.addEventListener('keydown', this.handleKeydown);
+  }
+
+  componentWillUnmount() {
+    window.removeEventListener('keydown', this.handleKeydown);
   }
 
   componentDidUpdate(prevProps, prevState) {
