@@ -18,7 +18,6 @@ class App extends Component {
     loading: false,
     currentPage: 1,
     selectedImage: null,
-    inputValue: '',
   };
 
   handleSubmit = inputValue => {
