@@ -1,34 +1,29 @@
 import React, { Component } from 'react';
 import axios from 'axios';
-import { Puff } from 'react-loader-spinner';
+import { debounce } from 'lodash';
+
+import Searchbar from './Searchbar/index';
+import ImageGallery from './ImageGallery/index';
+import Button from './Button/index';
+import Loader from './Loader/index';
+import Modal from './Modal/index';
 
 const API_KEY = '36836755-9f43607b903fa703cdff42e50';
 const API_URL = 'https://pixabay.com/api/';
 
 class App extends Component {
   state = {
-    inputValue: '',
+    inputValue: 'nature',
     images: [],
     loading: false,
     currentPage: 1,
     selectedImage: null,
-    isActiveSearchButton: true,
+    inputValue: '',
   };
 
-  handleInputChange = e => {
-    this.setState({ inputValue: e.target.value });
-  };
-  handleSubmit = e => {
-    e.preventDefault();
-    this.setState(
-      {
-        images: [],
-        currentPage: 1,
-      },
-      () => {
-        this.fetchImages();
-        this.setState({ inputValue: '' });
-      }
+  handleSubmit = inputValue => {
+    this.setState({ inputValue, images: [], currentPage: 1 }, () =>
+      this.fetchImages(inputValue)
     );
   };
 
@@ -36,15 +31,20 @@ class App extends Component {
     this.setState({ selectedImage: imageURL });
   };
 
-  fetchImages = async () => {
+  fetchImages = debounce(async (query = this.state.inputValue) => {
     this.setState({ loading: true });
     try {
       const response = await axios.get(
-        `${API_URL}?q=${this.state.inputValue}&page=${this.state.currentPage}&key=${API_KEY}&image_type=photo&orientation=horizontal&per_page=12`
+        `${API_URL}?q=${query}&page=${this.state.currentPage}&key=${API_KEY}&image_type=photo&orientation=horizontal&per_page=12`
       );
-      console.log(response.data.hits);
+
+      const newImages = response.data.hits.filter(
+        image =>
+          !this.state.images.some(stateImage => stateImage.id === image.id)
+      );
+
       this.setState(prevState => ({
-        images: [...prevState.images, ...response.data.hits],
+        images: [...prevState.images, ...newImages],
         currentPage: prevState.currentPage + 1,
       }));
     } catch (error) {
@@ -52,94 +52,45 @@ class App extends Component {
     } finally {
       this.setState({ loading: false });
     }
-  };
+  }, 500);
 
-  handleKeydown = e => {
+  componentDidMount() {
+    this.fetchImages();
+
+    document.addEventListener('keydown', this.handleKeyDown);
+  }
+
+  componentWillUnmount() {
+    document.removeEventListener('keydown', this.handleKeyDown);
+  }
+
+  handleKeyDown = e => {
     if (e.code === 'Escape') {
       this.setState({ selectedImage: null });
     }
   };
 
-  componentDidMount() {
-    if (this.state.inputValue !== '') {
-      this.fetchImages();
-    }
-    window.addEventListener('keydown', this.handleKeydown);
-  }
-
-  componentWillUnmount() {
-    window.removeEventListener('keydown', this.handleKeydown);
-  }
-
-  componentDidUpdate(prevProps, prevState) {
-    if (
-      !this.state.isActiveSearchButton &&
-      prevState.inputValue !== this.state.inputValue
-    ) {
-      this.setState({ images: [], currentPage: 1 }, () => this.fetchImages());
-    }
-  }
-
-  toggleSearchMode = () => {
-    this.setState(prevState => ({
-      isActiveSearchButton: !prevState.isActiveSearchButton,
-    }));
-  };
-
   render() {
     return (
       <div className="App">
-        <header className="searchbar">
-          <form className="form" onSubmit={this.handleSubmit}>
-            <button
-              type="submit"
-              className="button"
-              disabled={!this.state.isActiveSearchButton}
-            >
-              <span className="button-label">Search</span>
-            </button>
-            <input
-              className="input"
-              type="text"
-              autoComplete="off"
-              autoFocus
-              placeholder="Search images and photos"
-              value={this.state.inputValue}
-              onChange={this.handleInputChange}
-            />
-            <button type="button" onClick={this.toggleSearchMode}>
-              Toggle search mode
-            </button>
-          </form>
-        </header>
+        <Searchbar onSubmit={this.handleSubmit} />
 
         {this.state.selectedImage && (
-          <div
-            className="overlay"
-            onClick={() => this.setState({ selectedImage: null })}
-          >
-            <div className="modal">
-              <img src={this.state.selectedImage} alt="Selected" />
-            </div>
-          </div>
+          <Modal
+            src={this.state.selectedImage}
+            onClose={() => this.setState({ selectedImage: null })}
+          />
         )}
 
-        <ul className="gallery">
-          {this.state.images.map(image => (
-            <li
-              className="gallery-item"
-              key={image.id}
-              onClick={() => this.handleImageClick(image.largeImageURL)}
-            >
-              <img src={image.webformatURL} alt="" />
-            </li>
-          ))}
-        </ul>
+        <ImageGallery
+          images={this.state.images}
+          onImageClick={this.handleImageClick}
+        />
 
         {this.state.loading ? (
-          <Puff color="#00BFFF" height={100} width={100} />
+          <Loader />
         ) : this.state.images.length > 0 ? (
-          <button onClick={this.fetchImages}>Load more</button>
+          <Button onClick={this.fetchImages}>Load more</Button>
         ) : null}
       </div>
     );
