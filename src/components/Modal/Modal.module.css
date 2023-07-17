@@ -16,6 +16,7 @@
 }
 
 .modal {
+  border-radius: 10px;
   background: white;
   padding: 10px;
   max-width: 60%;
