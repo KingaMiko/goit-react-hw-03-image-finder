@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import ReactModal from 'react-modal';
 import ImageGallery from 'react-image-gallery';
 import style from './Modal.module.css';
-import Loader from '../Loader'; // zaimportuj swój komponent loadera
+import Loader from '../Loader';
 
 import 'react-image-gallery/styles/css/image-gallery.css';
 
@@ -10,9 +10,17 @@ ReactModal.setAppElement('#root');
 
 const Modal = ({ images, currentIndex, onClose }) => {
   const [loaded, setLoaded] = useState(false);
+  const imageGalleryRef = useRef(null); // dodajemy referencję
 
   useEffect(() => {
     setLoaded(false);
+  }, [currentIndex]);
+
+  useEffect(() => {
+    if (imageGalleryRef.current) {
+      imageGalleryRef.current.slideToIndex(currentIndex);
+      setLoaded(false);
+    }
   }, [currentIndex]);
 
   const items = images.map(image => ({
@@ -31,17 +39,16 @@ const Modal = ({ images, currentIndex, onClose }) => {
       className={style.modal}
       overlayClassName={style.overlay}
     >
-      {!loaded && <Loader />}{' '}
-      {/* Wyświetlanie loadera jeżeli obraz nie został załadowany */}
+      {!loaded && <Loader />}
       <img
         src={items[currentIndex]?.original}
         style={{ display: 'none' }}
         onLoad={handleLoad}
         alt="Invisible"
-      />{' '}
-      {/* Niewidoczny obrazek służący do zmiany stanu loaded */}
-      {loaded && ( // Dodajemy warunek na wyświetlanie galerii
+      />
+      {loaded && (
         <ImageGallery
+          ref={imageGalleryRef} // używamy referencji
           items={items}
           startIndex={currentIndex}
           showPlayButton={false}
