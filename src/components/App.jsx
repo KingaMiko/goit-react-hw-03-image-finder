@@ -95,6 +95,10 @@ class App extends Component {
           <Loader />
         ) : this.state.images.length > 0 ? (
           <Button onClick={this.fetchImages}>Load more</Button>
+        ) : !this.state.loading && this.state.images.length === 0 ? (
+          <p style={{ color: 'white', textAlign: 'center', marginTop: '20px' }}>
+            No images found
+          </p>
         ) : null}
       </div>
     );
