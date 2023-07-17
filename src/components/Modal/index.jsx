@@ -50,9 +50,14 @@ const Modal = ({ images, currentIndex, onClose }) => {
         showThumbnails={false}
         showFullscreenButton={false}
         slideDuration={500}
+        onSlide={index => {
+          if (index !== currentIndex) {
+            setLoading(true);
+          }
+        }}
+        onImageLoad={() => setLoading(false)}
       />
     </ReactModal>
   );
 };
-
 export default Modal;
