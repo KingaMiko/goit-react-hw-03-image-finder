@@ -45,20 +45,20 @@
 
 .input-container {
   display: flex;
-  width: 100%;
+  width: 115%;
   justify-content: center;
   margin-bottom: 10px;
 }
 
 .toggle-button {
   color: white;
-  background-color: rgb(243, 72, 189); /* lighter shade of pink */
+  background-color: rgb(243, 72, 189);
   border: none;
   border-radius: 5px;
-  padding: 5px 10px; /* Smaller padding than the search button */
+  padding: 5px 10px;
   text-align: center;
   text-decoration: none;
-  font-size: 14px; /* Smaller font size */
+  font-size: 14px;
   margin: 4px 2px;
   cursor: pointer;
   transition-duration: 0.4s;

@@ -10,7 +10,7 @@ ReactModal.setAppElement('#root');
 
 const Modal = ({ images, currentIndex, onClose }) => {
   const [loaded, setLoaded] = useState(false);
-  const imageGalleryRef = useRef(null); // dodajemy referencję
+  const imageGalleryRef = useRef(null);
 
   useEffect(() => {
     setLoaded(false);
@@ -48,7 +48,7 @@ const Modal = ({ images, currentIndex, onClose }) => {
       />
       {loaded && (
         <ImageGallery
-          ref={imageGalleryRef} // używamy referencji
+          ref={imageGalleryRef}
           items={items}
           startIndex={currentIndex}
           showPlayButton={false}
