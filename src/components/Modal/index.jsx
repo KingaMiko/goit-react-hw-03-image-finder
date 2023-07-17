@@ -52,7 +52,7 @@ const Modal = ({ images, currentIndex, onClose }) => {
           items={items}
           startIndex={currentIndex}
           showPlayButton={false}
-          showBullets={true}
+          showBullets={false}
           showNav={true}
           showThumbnails={false}
           showFullscreenButton={false}
