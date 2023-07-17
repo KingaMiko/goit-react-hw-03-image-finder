@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import style from './Searchbar.module.css';
 
 class Searchbar extends Component {
   state = {
@@ -30,27 +31,34 @@ class Searchbar extends Component {
 
   render() {
     return (
-      <header className="Searchbar">
-        <form className="SearchForm" onSubmit={this.handleSubmit}>
+      <header className={style.searchbar}>
+        <form className={style.searchform} onSubmit={this.handleSubmit}>
+          <div className={style['input-container']}>
+            <input
+              className={style['searchform-input']}
+              type="text"
+              autoComplete="off"
+              autoFocus
+              placeholder="Search images and photos"
+              value={this.state.query}
+              onChange={this.handleInputChange}
+            />
+            {this.state.isActiveSearchButton && (
+              <button
+                type="submit"
+                className={`${style['searchform-button']}`}
+                disabled={!this.state.isActiveSearchButton}
+              >
+                <span className="SearchForm-button-label">Search</span>
+              </button>
+            )}
+          </div>
           <button
-            type="submit"
-            className="SearchForm-button"
-            disabled={!this.state.isActiveSearchButton}
+            type="button"
+            onClick={this.toggleSearchMode}
+            className={`${style['searchform-button']} ${style['toggle-button']}`}
           >
-            <span className="SearchForm-button-label">Search</span>
-          </button>
-
-          <input
-            className="SearchForm-input"
-            type="text"
-            autoComplete="off"
-            autoFocus
-            placeholder="Search images and photos"
-            value={this.state.query}
-            onChange={this.handleInputChange}
-          />
-          <button type="button" onClick={this.toggleSearchMode}>
-            Toggle Search Mode
+            Dynamic search
           </button>
         </form>
       </header>

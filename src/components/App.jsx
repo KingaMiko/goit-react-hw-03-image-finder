@@ -26,8 +26,14 @@ class App extends Component {
     );
   };
 
-  handleImageClick = imageURL => {
-    this.setState({ selectedImage: imageURL });
+  handleImageClick = imageIndex => {
+    if (typeof imageIndex === 'number') {
+      this.setState({ selectedImageIndex: imageIndex });
+    }
+  };
+
+  closeModal = () => {
+    this.setState({ selectedImageIndex: null });
   };
 
   fetchImages = debounce(async (query = this.state.inputValue) => {
@@ -65,7 +71,7 @@ class App extends Component {
 
   handleKeyDown = e => {
     if (e.code === 'Escape') {
-      this.setState({ selectedImage: null });
+      this.closeModal();
     }
   };
 
@@ -74,12 +80,11 @@ class App extends Component {
       <div className="App">
         <Searchbar onSubmit={this.handleSubmit} />
 
-        {this.state.selectedImage && (
-          <Modal
-            src={this.state.selectedImage}
-            onClose={() => this.setState({ selectedImage: null })}
-          />
-        )}
+        <Modal
+          images={this.state.images}
+          onClose={this.closeModal}
+          currentIndex={this.state.selectedImageIndex}
+        />
 
         <ImageGallery
           images={this.state.images}

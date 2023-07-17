@@ -1,13 +1,14 @@
 import React from 'react';
 import ImageGalleryItem from 'components/ImageGalleryItem';
+import style from './ImageGallery.module.css';
 
 const ImageGallery = ({ images, onImageClick }) => (
-  <ul className="gallery">
-    {images.map(image => (
+  <ul className={style.gallery}>
+    {images.map((image, index) => (
       <ImageGalleryItem
         key={image.id}
         src={image.webformatURL}
-        onClick={() => onImageClick(image.largeImageURL)}
+        onClick={() => onImageClick(index)}
       />
     ))}
   </ul>
