@@ -57,7 +57,7 @@ class App extends Component {
     } finally {
       this.setState({ loading: false });
     }
-  }, 500);
+  }, 0);
 
   componentDidMount() {
     this.fetchImages();
@@ -94,7 +94,9 @@ class App extends Component {
         {this.state.loading ? (
           <Loader />
         ) : this.state.images.length > 0 ? (
-          <Button onClick={this.fetchImages}>Load more</Button>
+          <Button onClick={() => this.fetchImages(this.state.lastQuery)}>
+            Load more
+          </Button>
         ) : !this.state.loading && this.state.images.length === 0 ? (
           <p style={{ color: 'white', textAlign: 'center', marginTop: '20px' }}>
             No images found
